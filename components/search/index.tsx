@@ -2,11 +2,12 @@
 import Input from "@/components/input";
 import Button from "@/components/button";
 import { useState } from "react";
+import { scrapeAndStoreProduct } from "@/lib/actions";
 
 const Search = () => {
     const [searching, setsearching] = useState(false);
     // check if url is valid aliexpress url
-    const isAEUrl = (url: string): boolean => {
+    const isAEUrl = (url: string): { isValidUrl: boolean; url: string } => {
         try {
             const parsedUrl = new URL(url);
             if (
@@ -15,17 +16,19 @@ const Search = () => {
             ) {
                 throw new Error("Unvalid Aliexpress url.");
             }
-            return true;
+            return { isValidUrl: true, url };
         } catch (error: any) {
             console.warn(`please enter a valid url ${error.message}`);
-            return false;
+            return { isValidUrl: false, url };
         }
     };
-    function handleSubmit(e: any) {
+    async function handleSubmit(e: any) {
         e.preventDefault();
         setsearching(true);
-        const isValidUrl = isAEUrl(e.target.querySelector("input").value);
         try {
+            const { isValidUrl, url } = isAEUrl(e.target.querySelector("input").value);
+            if (!isValidUrl) throw new Error("Unvalid url");
+            const idkWhat = await scrapeAndStoreProduct(url);
         } catch (err: any) {
             console.warn(`Error parsing ${err.message}`);
         } finally {
