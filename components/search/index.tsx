@@ -32,7 +32,7 @@ const Search = () => {
         } catch (err: any) {
             console.warn(`Error parsing ${err.message}`);
         } finally {
-            e.target.querySelector("input").value = "";
+            // e.target.querySelector("input").value = "";
             setsearching(false);
         }
     }
