@@ -3,23 +3,44 @@ import puppeteer from "puppeteer";
 
 export async function scrapeAEProduct(productUrl: string) {
     if (!productUrl) return null;
-    const browser: any = await puppeteer.launch({ headless: "new" });
+    const browser: any = await puppeteer.launch({
+        headless: "new",
+    });
+
     const page: any = await browser.newPage();
-    await page.setUserAgent(
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36"
-    );
+
     try {
-        await page.goto(productUrl, { waitUntil: "domcontentloaded" });
-        // helper function
-        const getPrice = (spans: any): string => {
-            let price: string = "";
-            for (const span of spans) {
-                price += span.textContent;
-            }
-            return price;
-        };
+        await page.goto(productUrl, { waitUntil: "networkidle2" });
+        await page.$eval(
+            "#gdpr-new-container",
+            (el: HTMLDivElement) => (el.style.display = "none")
+        );
+        await page.waitForSelector(".ship-to--menuItem--WdBDsYl");
+        await page.click(".es--wrap--RYjm1RT > div > div");
+        await page.waitForSelector(".es--saveBtn--w8EuBuy");
+        await page.click(".es--contentWrap--ypzOXHr.es--visible--12ePDdG > div:nth-child(6)");
+        await page.waitForSelector(
+            ".select--popup--W2YwXWt.select--visiblePopup--VUtkTX2 > .select--item--32FADYB"
+        );
+        await page.click(
+            ".select--popup--W2YwXWt.select--visiblePopup--VUtkTX2 > .select--item--32FADYB"
+        );
+        await page.click(".es--saveBtn--w8EuBuy");
+        await page.click(".es--saveBtn--w8EuBuy");
+
+        // // helper function
+        // const getPrice = (spans: any): string => {
+        //     let price: string = "";
+        //     for (const span of spans) {
+        //         price += span.textContent;
+        //     }
+        //     return price;
+        // };
         // starting the scraping functionality
+        await page.reload({ waitUntil: "load" });
+        await page.waitForSelector(".pdp-info");
         const productContainer = await page.$(".pdp-info");
+        if (!productContainer) throw new Error("the page did not load correctly");
         const productData: itemClient = await page.evaluate(
             (el: Element) => ({
                 title: el.querySelector('h1[data-pl="product-title"]')?.textContent,
@@ -48,6 +69,7 @@ export async function scrapeAEProduct(productUrl: string) {
         productData.currentPrice = priceArr.join("");
         productData.url = productUrl;
         // I have to send the data to be saved in the database
+        console.log(productData);
     } catch (err: any) {
         console.log(`Failed to scrape product ${err.message}`);
     } finally {
