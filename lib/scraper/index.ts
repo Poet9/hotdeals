@@ -13,7 +13,11 @@ export async function scrapeAEProduct(productUrl: string) {
     try {
         await page.goto(productUrl, { waitUntil: "networkidle2", timeout: 60000 });
         // changing currency to be always in euro (or the first suggested currency for that matter)
-        await page.$eval("#gdpr-new-container", (el: HTMLDivElement) => (el.style.display = "none"));
+        if (page.$("#gdpr-new-container"))
+          await page.$eval(
+            "#gdpr-new-container",
+            (el: HTMLDivElement) => (el.style.display = "none")
+          );
         await page.waitForSelector(".ship-to--menuItem--WdBDsYl");
         await page.click(".es--wrap--RYjm1RT > div > div");
         await page.waitForSelector(".es--saveBtn--w8EuBuy");
