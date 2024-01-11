@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@prisma/client": "^5.7.1",
+    "@prisma/client": "^5.8.0",
     "axios": "^1.6.3",
     "cheerio": "^1.0.0-rc.12",
     "next": "14.0.4",

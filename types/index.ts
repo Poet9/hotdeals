@@ -1,16 +1,16 @@
 export type item = {
     title: string;
     image: string;
-    currentPrice: number | string;
-    originalPrice: number | string;
     url: string;
-    currency: string;
-    priceHistory: number[];
+    currentPrice: number;
+    originalPrice: number;
     discount: string;
-    reviewCount: number | string;
-    stars: number | string;
+    reviewCount: string;
+    stars: number;
+    currency: string;
     inStock: boolean;
-    lowestPrice: number;
     highestPrice: number;
+    lowestPrice: number;
+    priceHistory: number[];
 };
-export type itemClient = Omit<item, "highestPrice" | "lowestPrice" | "priceHistory" | "currency">;
+export type itemClient = Omit<item, "highestPrice" | "lowestPrice" | "priceHistory">;
