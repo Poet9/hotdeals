@@ -32,7 +32,7 @@ const Search = () => {
         } catch (err: any) {
             console.warn(`Error parsing ${err.message}`);
         } finally {
-            // e.target.querySelector("input").value = "";
+            e.target.querySelector("input").value = "";
             setsearching(false);
         }
     }
@@ -46,10 +46,14 @@ const Search = () => {
             />
             <Button
                 type="submit"
-                className={`bg-[#a36f] px-3 my-1 rounded-r-lg`}
+                className={`bg-[#a36f] px-3 my-1 rounded-r-lg ${searching && "bg-[#c58f]"}`}
                 disabled={searching}
             >
-                {searching ? <span className="text-white animate-spin">&#11119;</span> : "Search"}
+                {searching ? (
+                    <p className="text-white  motion-safe:animate-spin">&#11119;</p>
+                ) : (
+                    "Search"
+                )}
             </Button>
         </form>
     );

@@ -5,7 +5,27 @@ generator client {
   provider = "prisma-client-js"
 }
 
+// using supabase 
 datasource db {
-  provider = "postgresql"
+  provider = "postgres"
   url      = env("DATABASE_URL")
 }
+
+// item model 
+model product {
+  id            String @id @default(uuid())
+  title         String
+  image         String
+  url           String @unique
+  currentPrice  Float
+  originalPrice Float
+  discount      String
+  reviewCount   String
+  stars         Float
+  inStock       Boolean
+  currency      String
+  highestPrice  Float
+  lowestPrice   Float
+  priceHistory  Float[]
+}
+
