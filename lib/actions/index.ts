@@ -1,9 +1,9 @@
 "use server";
-
 import { item } from "@/types";
 import { revalidatePath } from "next/cache";
-import { scrapeAEProduct } from "../scraper";
+import { scrapeAEProduct } from "@/lib/scraper";
 import { prisma } from "@/prisma/client";
+import { generateEmailBody, sendEmail } from "@/lib/nodemailer";
 
 export async function scrapeAndStoreProduct(productUrl: string) {
     if (!productUrl) return null;
@@ -13,6 +13,8 @@ export async function scrapeAndStoreProduct(productUrl: string) {
         // adding the missing pieces
         let scrapedProduct: item = {
             ...productData,
+            currentPrice: productData.currentPrice > 0 ? productData.currentPrice : productData.originalPrice,
+            originalPrice: productData.originalPrice > 0 ? productData.originalPrice : productData.currentPrice,
             highestPrice: productData.originalPrice > 0 ? productData.originalPrice : productData.currentPrice,
             lowestPrice: productData.currentPrice > 0 ? productData.currentPrice : productData.originalPrice,
             priceHistory: [productData.originalPrice, productData.currentPrice],
@@ -81,5 +83,23 @@ export const getAllProducts = async () => {
         return allProducts;
     } catch (err: any) {
         console.log(`An error has occured ${err.message}`);
+    }
+};
+
+// adding email to tracking list
+export const addEmail = async (productId: string, userEmail: string) => {
+    try {
+        const product = await prisma.product.findUnique({ where: { id: productId } });
+        if (!product) throw new Error("product not found.");
+        const emailExist = product.trackers.find((email: string) => email === userEmail);
+        if (emailExist) throw new Error("email already subscribed");
+        product.trackers.push(userEmail);
+        await prisma.product.update({ where: { id: product.id }, data: { trackers: [...product.trackers] } });
+
+        const emailContent = await generateEmailBody({ title: product.title, url: product.url }, "WELCOME");
+        await sendEmail(emailContent, [userEmail]);
+        console.log("successful!!");
+    } catch (err: any) {
+        console.log(`Error while adding email ${err.message}`);
     }
 };

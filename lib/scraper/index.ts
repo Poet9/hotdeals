@@ -13,11 +13,7 @@ export async function scrapeAEProduct(productUrl: string) {
     try {
         await page.goto(productUrl, { waitUntil: "networkidle2", timeout: 60000 });
         // changing currency to be always in euro (or the first suggested currency for that matter)
-        if (page.$("#gdpr-new-container"))
-          await page.$eval(
-            "#gdpr-new-container",
-            (el: HTMLDivElement) => (el.style.display = "none")
-          );
+        if (page.$("#gdpr-new-container")) await page.$eval("#gdpr-new-container", (el: HTMLDivElement) => (el.style.display = "none"));
         await page.waitForSelector(".ship-to--menuItem--WdBDsYl");
         await page.click(".es--wrap--RYjm1RT > div > div");
         await page.waitForSelector(".es--saveBtn--w8EuBuy");
@@ -34,11 +30,14 @@ export async function scrapeAEProduct(productUrl: string) {
         productData = await page.evaluate(
             (el: Element) => ({
                 title: el.querySelector('h1[data-pl="product-title"]')?.textContent || "",
-                image: el.querySelector(".magnifier--image--L4hZ4dC")?.getAttribute("src") || "",
+                image:
+                    el.querySelector(".magnifier--image--L4hZ4dC")?.getAttribute("src") ||
+                    el.querySelector(".video--wrap--NfR8r9l >.video--video--Zj0EIzE")?.getAttribute("poster") ||
+                    "",
                 url: "",
                 currentPrice: -1,
                 originalPrice: Number(el.querySelector(".price--originalText--Zsc6sMv")?.textContent?.match(/\d+(.*)/g)) || -1,
-                discount: el.querySelector(".price--discount--xET8qnP")?.textContent || "0%",
+                discount: Number(el.querySelector(".price--discount--xET8qnP")?.textContent?.match(/-?\d+(?:\.\d+)?/)) || -1,
                 reviewCount: el.querySelector('div[data-pl="product-reviewer"]')?.lastChild?.textContent?.trim() || -1,
                 stars: Number(el.querySelector('div[data-pl="product-reviewer"] > strong')?.textContent) || -1,
                 inStock: true,

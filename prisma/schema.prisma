@@ -13,19 +13,20 @@ datasource db {
 
 // item model 
 model product {
-  id            String @id @default(uuid())
+  id            String  @id @default(uuid())
   title         String
   image         String
-  url           String @unique
+  url           String  @unique
   currentPrice  Float
   originalPrice Float
-  discount      String
+  discount      Int     @default(0)
   reviewCount   String
   stars         Float
-  inStock       Boolean
+  inStock       Boolean @default(true)
   currency      String
   highestPrice  Float
   lowestPrice   Float
-  priceHistory  Float[]
+  priceHistory  Float[] 
+  trackers      String[] @default([])
 }
 

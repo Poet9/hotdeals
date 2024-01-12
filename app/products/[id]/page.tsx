@@ -55,7 +55,11 @@ const page = async ({ params }: Props) => {
                         <a href={product.url} target="_blank" className="py-2 px-4 text-white text-xl rounded-lg bg-green-800/80 hover:bg-green-800">
                             Visit
                         </a>
-                        <Button id="item-tracker" className="py-2 px-4 text-white text-xl rounded-lg bg-cyan-950 hover:bg-cyan-900">
+                        <Button
+                            id="item-tracker"
+                            productId={product.id}
+                            className="py-2 px-4 text-white text-xl rounded-lg bg-cyan-950 hover:bg-cyan-900"
+                        >
                             Track
                         </Button>
                     </div>
