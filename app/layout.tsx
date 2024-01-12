@@ -15,14 +15,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <html lang="en">
             <head>
                 <link rel="icon" href="/favicon.ico" sizes="any" />
-                <link
-                    rel="icon"
-                    href="/icon?<generated>"
-                    type="image/<generated>"
-                    sizes="<generated>"
-                />
+                <link rel="icon" href="/icon?<generated>" type="image/<generated>" sizes="<generated>" />
             </head>
-            <body className={inter.className}>{children}</body>
+            <body className={inter.className + " overflow-x-hidden"}>{children}</body>
         </html>
     );
 }

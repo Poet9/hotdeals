@@ -1,8 +1,9 @@
 "use client";
 import Input from "@/components/input";
-import Button from "@/components/button";
+import Button from "@/components/tracker";
 import { useState } from "react";
 import { scrapeAndStoreProduct } from "@/lib/actions";
+import { ArrowPathIcon } from "@heroicons/react/24/outline";
 
 const Search = () => {
     const [searching, setsearching] = useState(false);
@@ -44,17 +45,9 @@ const Search = () => {
                 className="bg-slate-600 rounded-l outline-none text-white focus:bg-slate-700"
                 required
             />
-            <Button
-                type="submit"
-                className={`bg-[#a36f] px-3 my-1 rounded-r-lg ${searching && "bg-[#c58f]"}`}
-                disabled={searching}
-            >
-                {searching ? (
-                    <p className="text-white  motion-safe:animate-spin">&#11119;</p>
-                ) : (
-                    "Search"
-                )}
-            </Button>
+            <button type="submit" className={`bg-[#a36f] px-3 my-1 rounded-r-lg ${searching && "bg-[#c58f]"}`} disabled={searching}>
+                {searching ? <ArrowPathIcon className="w-5 h-5 motion-safe:animate-spin" /> : "Search"}
+            </button>
         </form>
     );
 };
