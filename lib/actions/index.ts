@@ -5,6 +5,7 @@ import { scrapeAEProduct } from "@/lib/scraper";
 import { prisma } from "@/prisma/client";
 import { generateEmailBody, sendEmail } from "@/lib/nodemailer";
 
+
 export async function scrapeAndStoreProduct(productUrl: string) {
     if (!productUrl) return null;
     try {

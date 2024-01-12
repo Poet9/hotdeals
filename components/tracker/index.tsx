@@ -1,4 +1,5 @@
 "use client";
+
 import { FormEvent, forwardRef, useState } from "react";
 import { ArrowPathIcon } from "@heroicons/react/24/outline";
 
@@ -33,12 +34,14 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Btn({ product
         } catch (err: any) {
             console.log(`An error has occured ${err.message}`);
         }
+
     }
     return (
         <div>
             <button id={id} type={type} className={`text-white outline-none ${className}`} onClick={() => setshowModal(true)}>
                 {children}
             </button>
+
             <Modal title="Track this item" hidden={!showModal} onClose={() => setshowModal(false)} className="min-h-96 text-black bg-slate-200">
                 <form action="submit" onSubmit={trackItemHandler} className="flex flex-col gap-4">
                     <h2 className="text-xl text-slate-800"> Stay updated and never miss discounts of your desired product</h2>
@@ -54,6 +57,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Btn({ product
                     <p className={`text-red-500 text-sm p-1 ${showError ? "visible" : "hidden"}`}>Please enter a valid email.</p>
                     <button type="submit" disabled={loading} className="py-2 text-white rounded-lg bg-cyan-950 hover:bg-cyan-900">
                         {loading ? <ArrowPathIcon className="m-auto h-5 w-5 text-gray-200 motion-safe:animate-spin" /> : "Submit"}
+
                     </button>
                 </form>
             </Modal>
