@@ -7,61 +7,48 @@ import { generateEmailBody, sendEmail } from "@/lib/nodemailer";
 import { searchForHighest, searchForLowest } from "@/lib/utils";
 
 export async function scrapeAndStoreProduct(productUrl: string) {
-  if (!productUrl) return null;
-  try {
-    const productData = await scrapeAEProduct(productUrl);
-    if (!productData) throw new Error("no data has been returned");
-    // adding the missing pieces
-    let scrapedProduct: item = {
-      ...productData,
-      currentPrice:
-        productData.currentPrice > 0
-          ? productData.currentPrice
-          : productData.originalPrice,
-      originalPrice:
-        productData.originalPrice > 0
-          ? productData.originalPrice
-          : productData.currentPrice,
-      highestPrice:
-        productData.originalPrice > 0
-          ? productData.originalPrice
-          : productData.currentPrice,
-      lowestPrice:
-        productData.currentPrice > 0
-          ? productData.currentPrice
-          : productData.originalPrice,
-      priceHistory: [productData.originalPrice, productData.currentPrice],
-    };
-    // checking if it is already in db
-    const existingProduct = await prisma.product.findFirst({
-      where: { url: productData.url },
-    });
-    if (existingProduct) {
-      if (existingProduct.priceHistory.at(-1) !== productData.currentPrice)
-        existingProduct.priceHistory.push(productData.currentPrice);
+    if (!productUrl) return null;
+    try {
+        const productData = await scrapeAEProduct(productUrl);
+        if (!productData) throw new Error("no data has been returned");
+        // adding the missing pieces
+        let scrapedProduct: item = {
+            ...productData,
+            currentPrice: productData.currentPrice > 0 ? productData.currentPrice : productData.originalPrice,
+            originalPrice: productData.originalPrice > 0 ? productData.originalPrice : productData.currentPrice,
+            highestPrice: productData.originalPrice > 0 ? productData.originalPrice : productData.currentPrice,
+            lowestPrice: productData.currentPrice > 0 ? productData.currentPrice : productData.originalPrice,
+            priceHistory: [productData.originalPrice, productData.currentPrice],
+        };
+        // checking if it is already in db
+        const existingProduct = await prisma.product.findFirst({
+            where: { url: productData.url },
+        });
+        if (existingProduct) {
+            if (existingProduct.priceHistory.at(-1) !== productData.currentPrice) existingProduct.priceHistory.push(productData.currentPrice);
 
-      scrapedProduct = {
-        ...scrapedProduct,
-        priceHistory: existingProduct.priceHistory,
-        lowestPrice: searchForLowest(existingProduct.priceHistory),
-        highestPrice: searchForHighest(existingProduct.priceHistory),
-      };
+            scrapedProduct = {
+                ...scrapedProduct,
+                priceHistory: existingProduct.priceHistory,
+                lowestPrice: searchForLowest(existingProduct.priceHistory),
+                highestPrice: searchForHighest(existingProduct.priceHistory),
+            };
+        }
+        // this part handles saving a record or updating it
+        const newProduct = await prisma.product.upsert({
+            where: { url: scrapedProduct.url },
+            update: {
+                priceHistory: scrapedProduct.priceHistory,
+                lowestPrice: scrapedProduct.lowestPrice,
+                highestPrice: scrapedProduct.highestPrice,
+            },
+            create: { ...scrapedProduct },
+        });
+        revalidatePath(`/products/${newProduct.id}`);
+    } catch (err: any) {
+        console.log(`Failed to create/update product ${err.message}`);
+        return null;
     }
-    // this part handles saving a record or updating it
-    const newProduct = await prisma.product.upsert({
-      where: { url: scrapedProduct.url },
-      update: {
-        priceHistory: scrapedProduct.priceHistory,
-        lowestPrice: scrapedProduct.lowestPrice,
-        highestPrice: scrapedProduct.highestPrice,
-      },
-      create: { ...scrapedProduct },
-    });
-    revalidatePath(`/products/${newProduct.id}`);
-  } catch (err: any) {
-    console.log(`Failed to create/update product ${err.message}`);
-    return null;
-  }
 }
 // get specific product data
 export const getProduct = async (id: string) => {

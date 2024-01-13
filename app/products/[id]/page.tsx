@@ -36,7 +36,7 @@ const page = async ({ params }: Props) => {
                     </div>
                 </div>
                 <div className="flex gap-5">
-                    <h3 className="p-2 bg-red-500/80 text-white"> {product.discount}</h3>
+                    <h3 className="p-2 bg-red-500/80 text-white"> {product.discount}%</h3>
                     <p className="text-[34px] text-secondary font-bold">
                         {product.currency} {product.currentPrice}
                     </p>

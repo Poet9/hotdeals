@@ -2,22 +2,15 @@
 import { EmailContent, EmailProductInfo, NotificationType } from "@/types";
 import nodemailer from "nodemailer";
 // function to generate body for the email
-export const generateEmailBody = async (
-  product: EmailProductInfo,
-  type: NotificationType | null
-) => {
-  if (!type) return;
-  const THRESHOLD_PERCENTAGE = -40;
-  let subject,
-    body: string = "";
-  const shortenedTitle =
-    product.title.length > 20
-      ? `${product.title.substring(0, 20)}...`
-      : product.title;
-  switch (type) {
-    case "WELCOME":
-      subject = `Welcome to hotdeals`;
-      body = `
+export const generateEmailBody = async (product: EmailProductInfo, type: NotificationType | null) => {
+    const THRESHOLD_PERCENTAGE = -40;
+    let subject,
+        body: string = "";
+    const shortenedTitle = product.title.length > 20 ? `${product.title.substring(0, 20)}...` : product.title;
+    switch (type) {
+        case "WELCOME":
+            subject = `Welcome to hotdeals`;
+            body = `
             <div>
               <h1>You are tracking ${product.title}</h1>
               <h2>Welcome to Hotdeals</h2>
@@ -31,42 +24,42 @@ export const generateEmailBody = async (
               <p>Stay tuned for more updates on ${product.title} and other products you're tracking.</p>
             </div>
           `;
-      break;
+            break;
 
-    case "CHANGE_OF_STOCK":
-      subject = `${shortenedTitle} is now back in stock!`;
-      body = `
+        case "CHANGE_OF_STOCK":
+            subject = `${shortenedTitle} is now back in stock!`;
+            body = `
             <div>
               <h4>Hey, ${product.title} is now restocked! Grab yours before they run out again!</h4>
               <p>See the product <a href="${product.url}" target="_blank" rel="noopener noreferrer">here</a>.</p>
             </div>
           `;
-      break;
+            break;
 
-    case "LOWEST_PRICE":
-      subject = `Lowest Price Alert for ${shortenedTitle}`;
-      body = `
+        case "LOWEST_PRICE":
+            subject = `Lowest Price Alert for ${shortenedTitle}`;
+            body = `
             <div>
               <h4>Hey, ${product.title} has reached its lowest price ever!!</h4>
               <p>Grab the product <a href="${product.url}" target="_blank" rel="noopener noreferrer">here</a> now.</p>
             </div>
           `;
-      break;
+            break;
 
-    case "THRESHOLD_MET":
-      subject = `Discount Alert for ${shortenedTitle}`;
-      body = `
+        case "THRESHOLD_MET":
+            subject = `Discount Alert for ${shortenedTitle}`;
+            body = `
             <div>
               <h4>Hey, ${product.title} is now available at a discount more than ${THRESHOLD_PERCENTAGE}%!</h4>
               <p>Grab it right away from <a href="${product.url}" target="_blank" rel="noopener noreferrer">here</a>.</p>
             </div>
           `;
-      break;
+            break;
 
-    default:
-      throw new Error("Invalid notification type.");
-  }
-  return { subject, body };
+        default:
+            throw new Error("Invalid notification type.");
+    }
+    return { subject, body };
 };
 
 const transporter = nodemailer.createTransport({
