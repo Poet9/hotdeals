@@ -1,11 +1,11 @@
 "use server";
 import { itemClient } from "@/types";
-import puppeteer from "puppeteer";
+import chromium from "chrome-aws-lambda";
 
 export async function scrapeAEProduct(productUrl: string) {
     if (!productUrl) return null;
-    const browser: any = await puppeteer.launch({
-        headless: "new",
+    const browser = await chromium.puppeteer.launch({
+        executablePath: await chromium.executablePath,
     });
 
     const page: any = await browser.newPage();
