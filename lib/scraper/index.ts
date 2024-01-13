@@ -7,17 +7,16 @@ import chrome from "chrome-aws-lambda";
 export async function scrapeAEProduct(productUrl: string) {
     if (!productUrl) return null;
     // filling the options
-    const browserOptions = {
-        args: [...chrome.args, "--hide-scrollbars", "--disable-web-security"],
-        defaultViewport: chrome.defaultViewport,
-        executablePath: await chrome.executablePath,
-        headless: true,
-        ignoreHTTPSErrors: true,
-    };
     var productData: itemClient | null = null;
     var browser: any = {};
     try {
-        browser = await chrome.puppeteer.launch(browserOptions);
+        browser = await chrome.puppeteer.launch({
+            args: [...chrome.args, "--hide-scrollbars", "--disable-web-security"],
+            defaultViewport: chrome.defaultViewport,
+            executablePath: await chrome.executablePath,
+            headless: true,
+            ignoreHTTPSErrors: true,
+        });
         const page: any = await browser.newPage();
         await page.goto(productUrl, { waitUntil: "networkidle2", timeout: 60000 });
         // changing currency to be always in euro (or the first suggested currency for that matter)
