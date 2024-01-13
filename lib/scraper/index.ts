@@ -1,12 +1,32 @@
 "use server";
 import { itemClient } from "@/types";
-import puppeteer from "puppeteer";
+import Puppeteer from "puppeteer";
+import Chromium from "chrome-aws-lambda";
+import PuppeteerCore from "puppeteer-core";
+
+let chrome: any = {};
+let puppeteer: any;
+
+if (process.env.AWS_LAMBDA_FUNCTION_VERSION) {
+    chrome = Chromium;
+    puppeteer = PuppeteerCore;
+} else {
+    puppeteer = Puppeteer;
+}
 
 export async function scrapeAEProduct(productUrl: string) {
     if (!productUrl) return null;
-    const browser = await puppeteer.launch({
-        headless: "new",
-    });
+    let browserOptions: any = {}; // filling the options
+    if (process.env.AWS_LAMBDA_FUNCTION_VERSION) {
+        browserOptions = {
+            args: [...chrome.args, "--hide-scrollbars", "--disable-web-security"],
+            defaultViewport: chrome.defaultViewport,
+            executablePath: await chrome.executablePath,
+            headless: true,
+            ignoreHTTPSErrors: true,
+        };
+    }
+    const browser = await puppeteer.launch(browserOptions);
 
     const page: any = await browser.newPage();
     var productData: itemClient | null = null;
