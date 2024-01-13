@@ -1,18 +1,8 @@
 "use server";
 import { itemClient } from "@/types";
-import Puppeteer from "puppeteer";
-import Chromium from "chrome-aws-lambda";
-import PuppeteerCore from "puppeteer-core";
-
-let chrome: any = {};
-let puppeteer: any;
-
-if (process.env.AWS_LAMBDA_FUNCTION_VERSION) {
-    chrome = Chromium;
-    puppeteer = PuppeteerCore;
-} else {
-    puppeteer = Puppeteer;
-}
+// import Puppeteer from "puppeteer";
+import chrome from "chrome-aws-lambda";
+import puppeteer from "puppeteer-core";
 
 export async function scrapeAEProduct(productUrl: string) {
     if (!productUrl) return null;
