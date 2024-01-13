@@ -16,11 +16,11 @@ export async function scrapeAEProduct(productUrl: string) {
             ignoreHTTPSErrors: true,
         };
     }
+    var productData: itemClient | null = null;
     try {
-        const browser = await puppeteer.launch(browserOptions);
+        var browser = await puppeteer.launch(browserOptions);
 
         const page: any = await browser.newPage();
-        var productData: itemClient | null = null;
         await page.goto(productUrl, { waitUntil: "networkidle2", timeout: 60000 });
         // changing currency to be always in euro (or the first suggested currency for that matter)
         if (page.$("#gdpr-new-container")) await page.$eval("#gdpr-new-container", (el: HTMLDivElement) => (el.style.display = "none"));
