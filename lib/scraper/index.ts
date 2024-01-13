@@ -15,8 +15,9 @@ export async function scrapeAEProduct(productUrl: string) {
         ignoreHTTPSErrors: true,
     };
     var productData: itemClient | null = null;
-    var browser = await chrome.puppeteer.launch(browserOptions);
+    var browser: any = {};
     try {
+        browser = await chrome.puppeteer.launch(browserOptions);
         const page: any = await browser.newPage();
         await page.goto(productUrl, { waitUntil: "networkidle2", timeout: 60000 });
         // changing currency to be always in euro (or the first suggested currency for that matter)
