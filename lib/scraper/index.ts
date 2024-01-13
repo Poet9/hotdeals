@@ -2,7 +2,7 @@
 import { itemClient } from "@/types";
 // import Puppeteer from "puppeteer";
 import chrome from "chrome-aws-lambda";
-// import puppeteer from "puppeteer-core";
+import puppeteer from "puppeteer-core";
 
 export async function scrapeAEProduct(productUrl: string) {
     if (!productUrl) return null;
@@ -10,7 +10,7 @@ export async function scrapeAEProduct(productUrl: string) {
     var productData: itemClient | null = null;
     var browser: any = {};
     try {
-        browser = await chrome.puppeteer.launch({
+        browser = await puppeteer.launch({
             args: [...chrome.args, "--hide-scrollbars", "--disable-web-security"],
             defaultViewport: chrome.defaultViewport,
             executablePath: await chrome.executablePath,
